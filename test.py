@@ -7,16 +7,9 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    # np.set_printoptions(threshold=sys.maxsize)
     file = 'facebook_combined.txt'
-    graph = nx.read_edgelist(file, create_using=nx.DiGraph(), nodetype=int, edgetype=int)
-    # adj_mat = nx.convert.to_dict_of_dicts(digraph)
-    # adj_mat = nx.convert.to_dict_of_lists(digraph)
-    adj_mat = nx.to_numpy_matrix(graph)
-
-    # adj_mat = nx.adjacency_matrix(graph, nodelist=sorted(graph.nodes()))
-    # print(adj_mat)
-    # nodelist = list(graph.nodes)
+    graph = nx.read_edgelist(file, create_using=nx.Graph(), nodetype=int, edgetype=int)
+    graph.to_undirected()
 
     def dijkstra(g, src) -> list:
         dist = [len(g)]
@@ -52,9 +45,6 @@ def main():
 
         return dist
 
-    # print(dijkstra(graph, 0))
-    # pp.pprint(dijkstra(graph, 0))
-    """
     counter = 0
     for i in dijkstra(graph, 0):
         print(str(counter) + '\t' + str(i))
@@ -66,14 +56,13 @@ def main():
             dist_sum += i
         else:
             dist_sum += 0
-    """
-    orig_dist = len(dijkstra(graph, 0))
-    print(orig_dist)
+    
+    # orig_dist = len(dijkstra(graph, 0))
+    # print(orig_dist)
     dijkstra(graph, 0).remove(1e7)
     new_dist = len(dijkstra(graph, 0))
     print(new_dist)
-    new_n = orig_dist - new_dist
-    """
+    # new_n = orig_dist - new_dist
 
     dist = dijkstra(graph, 4038)
     i = len(dist)
@@ -85,13 +74,22 @@ def main():
 
     cc = (new_n - 1) / dist_sum
     print(cc)
+    """
+    clo_cen(dijkstra, graph)
 
-    nx_cc = nx.closeness_centrality(graph, u=4037)
-    print(nx_cc)
+    nx_cc = nx.closeness_centrality(graph, u=686)
+    print('NX:  ', nx_cc)
 
-    # print(graph.has_edge(0, 347))
-    nx.draw(graph, with_labels=True)
-    plt.show()
+
+def clo_cen(dijkstra, graph) -> float:
+    dist = dijkstra(graph, 686)
+    final_dist = [value for value in dist if value != 1e7]
+    dist_sum = np.sum(final_dist)
+    print(dist_sum)
+    print(len(final_dist))
+    cc = (len(final_dist) - 1) / dist_sum
+    print('Our: ', cc)
+    return cc
 
 
 if __name__ == '__main__':
