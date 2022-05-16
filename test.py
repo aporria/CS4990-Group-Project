@@ -22,7 +22,6 @@ def main():
             q.append(node)
         dist[src] = 0
 
-        size = len(q)
         while q:
             current_min_node = None
             for node in q:
@@ -34,11 +33,11 @@ def main():
             neighbors = g.neighbors(current_min_node)
             for neighbor in neighbors:
                 if g.has_edge(current_min_node, neighbor):
-                    tentative_val = dist[current_min_node] + 1
+                    value = dist[current_min_node] + 1
                 else:
-                    tentative_val = dist[current_min_node]
-                if tentative_val < dist[neighbor]:
-                    dist[neighbor] = tentative_val
+                    value = dist[current_min_node]
+                if value < dist[neighbor]:
+                    dist[neighbor] = value
                     prev[neighbor] = current_min_node
 
             q.remove(current_min_node)
@@ -77,21 +76,29 @@ def main():
     print(cc)
     """
 
-    #nx_cc = nx.closeness_centrality(graph, u=686)
-    #print('NX:  ', nx_cc)
+    # nx_cc = nx.closeness_centrality(graph, u=686)
+    # print('NX:  ', nx_cc)
 
     def clo_cen(graph, src) -> float:
         dist = dijkstra(graph, src)
         final_dist = [value for value in dist if value != 1e7]
         dist_sum = np.sum(final_dist)
-        # print(dist_sum)
-        # print(len(final_dist))
         cc = (len(final_dist) - 1) / dist_sum
-        # print('CC: ', cc)
         return cc
 
-    for i in range(len(graph)):
-        print("CC", i, " ", clo_cen(graph, i))
+    # for i in range(len(graph)):
+    # print("CC", i, " ", clo_cen(graph, i))
+
+    comm = MPI.COMM_WORLD
+    p = comm.Get_size()
+    rank = comm.Get_rank()
+    local_n = len(graph.nodes) // p
+    count = 0
+    for i in range(p):
+        if rank == i:
+            for node in range(count + local_n):
+                print(clo_cen(graph, node))
+            count += local_n
 
 
 if __name__ == '__main__':
