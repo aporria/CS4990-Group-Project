@@ -45,11 +45,12 @@ def main():
 
         return dist
 
+    """
     counter = 0
     for i in dijkstra(graph, 0):
         print(str(counter) + '\t' + str(i))
         counter = counter + 1
-    """
+    
     dist_sum = 0
     for i in dijkstra(graph, 4038):
         if i != 1e7:
@@ -75,21 +76,22 @@ def main():
     cc = (new_n - 1) / dist_sum
     print(cc)
     """
-    clo_cen(dijkstra, graph)
 
-    nx_cc = nx.closeness_centrality(graph, u=686)
-    print('NX:  ', nx_cc)
+    #nx_cc = nx.closeness_centrality(graph, u=686)
+    #print('NX:  ', nx_cc)
 
+    def clo_cen(graph, src) -> float:
+        dist = dijkstra(graph, src)
+        final_dist = [value for value in dist if value != 1e7]
+        dist_sum = np.sum(final_dist)
+        # print(dist_sum)
+        # print(len(final_dist))
+        cc = (len(final_dist) - 1) / dist_sum
+        # print('CC: ', cc)
+        return cc
 
-def clo_cen(dijkstra, graph) -> float:
-    dist = dijkstra(graph, 686)
-    final_dist = [value for value in dist if value != 1e7]
-    dist_sum = np.sum(final_dist)
-    print(dist_sum)
-    print(len(final_dist))
-    cc = (len(final_dist) - 1) / dist_sum
-    print('Our: ', cc)
-    return cc
+    for i in range(len(graph)):
+        print("CC", i, " ", clo_cen(graph, i))
 
 
 if __name__ == '__main__':
