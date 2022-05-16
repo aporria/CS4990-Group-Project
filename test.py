@@ -4,6 +4,7 @@ import numpy as np
 import networkx as nx
 import pprint as pp
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 
 def main():
@@ -76,8 +77,8 @@ def main():
     print(cc)
     """
 
-    # nx_cc = nx.closeness_centrality(graph, u=686)
-    # print('NX:  ', nx_cc)
+    # nx_cc = nx.closeness_centrality(graph)
+    # pp.pprint(nx_cc)
 
     def clo_cen(graph, src) -> float:
         dist = dijkstra(graph, src)
@@ -92,13 +93,32 @@ def main():
     comm = MPI.COMM_WORLD
     p = comm.Get_size()
     rank = comm.Get_rank()
-    local_n = len(graph.nodes) // p
+    local_n = int(len(graph.nodes) / p)
+    # print(local_n)
     count = 0
-    for i in range(p):
-        if rank == i:
-            for node in range(count + local_n):
-                print(clo_cen(graph, node))
-            count += local_n
+
+    def mpi_clo():
+        if rank == 0:
+            for node in range(0, 1009):
+                print(node, "\t", clo_cen(graph, node))
+        elif rank == 1:
+            for node in range(1010, 2019):
+                print(node, "\t", clo_cen(graph, node))
+        elif rank == 2:
+            for node in range(2020, 3029):
+                print(node, "\t", clo_cen(graph, node))
+        elif rank == 3:
+            for node in range(3030, 4039):
+                print(node, "\t", clo_cen(graph, node))
+        print(rank)
+
+    start = datetime.now()
+    mpi_clo()
+    end = datetime.now()
+    runtime = end - start
+    print(runtime)
+
+    # print(count)
 
 
 if __name__ == '__main__':
