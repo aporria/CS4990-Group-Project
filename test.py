@@ -94,29 +94,44 @@ def main():
     p = comm.Get_size()
     rank = comm.Get_rank()
     local_n = int(len(graph.nodes) / p)
-    # print(local_n)
     count = 0
 
     def mpi_clo():
         if rank == 0:
             for node in range(0, 1009):
-                print(node, "\t", clo_cen(graph, node))
+                print(node, "\t", clo_cen(graph, node), "\t", rank)
+            print('\n')
         elif rank == 1:
             for node in range(1010, 2019):
-                print(node, "\t", clo_cen(graph, node))
+                print(node, "\t", clo_cen(graph, node), "\t", rank)
+            print('\n')
         elif rank == 2:
             for node in range(2020, 3029):
-                print(node, "\t", clo_cen(graph, node))
+                print(node, "\t", clo_cen(graph, node), "\t", rank)
+            print('\n')
         elif rank == 3:
             for node in range(3030, 4039):
-                print(node, "\t", clo_cen(graph, node))
-        print(rank)
+                print(node, "\t", clo_cen(graph, node), "\t", rank)
+            print('\n')
+        # print(rank)
+        comm.Barrier()
+
+    def test():
+        if rank == 0:
+            for node in range(0, local_n):
+                print(node, "\t", clo_cen(graph, node), "\t", rank)
+            print('\n')
+        elif rank != 0:
+            for node in range(local_n * rank, local_n * (rank + 1)):
+                print(node, "\t", clo_cen(graph, node), "\t", rank)
+            print('\n')
+        comm.Barrier()
 
     start = datetime.now()
-    mpi_clo()
+    test()
     end = datetime.now()
     runtime = end - start
-    print(runtime)
+    print(runtime, "\trank: ", rank)
 
     # print(count)
 
