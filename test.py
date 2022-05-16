@@ -87,7 +87,7 @@ def main():
         return cc
 
     # for i in range(len(graph)):
-    # print("CC", i, " ", clo_cen(graph, i))
+    #   print("CC", i, " ", clo_cen(graph, i))
 
     comm = MPI.COMM_WORLD
     p = comm.Get_size()
