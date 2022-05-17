@@ -116,24 +116,55 @@ def main():
         # print(rank)
         comm.Barrier()
 
+    cc_list = []
+
     def test():
+        cc = 0
         if rank == 0:
             for node in range(0, local_n):
-                print(node, "\t", clo_cen(graph, node), "\t", rank)
+                cc = clo_cen(graph, node)
+                print(node, "\t", cc, "\t", rank)
+                with open("output.txt", "a") as o:
+                    o.write(str(cc))
+                    o.write('\n')
+                cc_list.append(cc)
             print('\n')
         elif rank != 0:
             for node in range(local_n * rank, local_n * (rank + 1)):
-                print(node, "\t", clo_cen(graph, node), "\t", rank)
+                cc = clo_cen(graph, node)
+                print(node, "\t", cc, "\t", rank)
+                with open("output.txt", "a") as o:
+                    o.write(str(cc))
+                    o.write('\n')
+                cc_list.append(cc)
             print('\n')
         comm.Barrier()
 
+    def average(list) -> float:
+        list_sum = sum(list)
+        avg = list_sum / len(graph.nodes)
+        return avg
+
     start = datetime.now()
     test()
+
     end = datetime.now()
     runtime = end - start
-    print(runtime, "\trank: ", rank)
+    print("time:\t", runtime, "\trank: ", rank)
 
-    # print(count)
+    def print_output():
+        # output avg
+        list_avg = average(cc_list)
+        print('Average of all closeness centralities: ', list_avg)
+
+        # output top five nodes
+        sorted(cc_list, reverse=True)
+        top_five = cc_list[:5]
+        print('Top five nodes: ')
+        for i in top_five:
+            print(i)
+
+    print_output()
 
 
 if __name__ == '__main__':
